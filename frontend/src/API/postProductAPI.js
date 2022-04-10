@@ -1,45 +1,38 @@
- 
-  async function postProductAPI({token,e,formData,productsAPI,setIsSuccessfullySend}){
+async function postProductAPI({
+  token,
+  e,
+  formData,
+  productsAPI,
+  setIsSuccessfullySend,
+}) {
+  const headers = new Headers();
 
-      
-      
-       const headers = new Headers();
-       
-        headers.append('Accept', 'application/json');
-      headers.append('Authorization', `Bearer ${token}`);
+  headers.append("Accept", "application/json");
+  headers.append("Authorization", `Bearer ${token}`);
 
-
-        const setting = {
-          method: 'POST',
-                  body: formData,
-          headers: headers,
-
-        }
+  const setting = {
+    method: "POST",
+    body: formData,
+    headers: headers,
+  };
 
   try {
+    let res = await fetch("/api/products", setting);
 
-     let res = await fetch("/api/products", setting);
-       
-        if(res.status === 201 ){
-  setIsSuccessfullySend(true)
-e.target.reset()
- 
-await productsAPI()
+    if (res.status === 201) {
+      setIsSuccessfullySend(true);
+      e.target.reset();
 
-        setTimeout(() => {
-   setIsSuccessfullySend(false)
+      await productsAPI();
 
-            }, 2000);
-            return
-      }     
-      
-} catch (err) {
-
-        console.log(err)
-      }
+      setTimeout(() => {
+        setIsSuccessfullySend(false);
+      }, 2000);
+      return;
+    }
+  } catch (err) {
+    console.log(err);
   }
+}
 
- 
-
-export default postProductAPI
-
+export default postProductAPI;

@@ -1,61 +1,44 @@
+import currentUserAPI from "../API/currentUserAPI";
 
-import currentUserAPI from '../API/currentUserAPI'
+async function postOrderAPI({
+  resetTotalCost,
+  cartProducts,
+  token,
+  emptyCart,
+  setCurrentUser,
+  toggleCart,
+}) {
+  try {
+    const productsArray = cartProducts.map((product) => ({
+      productId: product.info._id,
+      quantity: product.quantity,
+    }));
 
-async function postOrderAPI({resetTotalCost,cartProducts,token,emptyCart,setCurrentUser,toggleCart}){
+    const headers = new Headers();
 
-try {
+    headers.append("Accept", "application/json");
 
+    headers.append("Authorization", `Bearer ${token}`);
+    headers.append("Content-Type", "application/json");
 
- const productsArray = cartProducts.map( product =>
- ({
-        productId: product.info._id,
-        quantity: product.quantity
-})    
-  )
+    const setting = {
+      method: "POST",
+      body: JSON.stringify({ order: productsArray }),
+      headers: headers,
+    };
 
+    let res = await fetch("/api/orders", setting);
 
+    if (res.status === 201) {
+      emptyCart();
+      resetTotalCost();
+      toggleCart(false);
+      await currentUserAPI({ setCurrentUser, token });
 
-
-
-  const headers = new Headers();
-
- headers.append('Accept', 'application/json');
-
- headers.append('Authorization', `Bearer ${token}`);
-headers.append('Content-Type', 'application/json');
-
-       
-
-        const setting = {
-          method: 'POST',
-            body: JSON.stringify({order:productsArray}),
-          headers: headers,
-        }
-
-
-
-        let res = await fetch("/api/orders", setting);
-
-
-
-      if(res.status === 201) {
-      
-      emptyCart()
-      resetTotalCost()
-     toggleCart(false)
-      await   currentUserAPI({setCurrentUser,token})
-
-      return
-      
+      return;
     }
-
-
-       
-}catch(err){
-
-  console.log(err)
-
+  } catch (err) {
+    console.log(err);
+  }
 }
-
-}
-export default postOrderAPI
+export default postOrderAPI;
